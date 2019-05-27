@@ -1,6 +1,8 @@
 // Global layout.
 body {
   background: map-get($colors, ui-light);
+  padding: 0;
+  margin: 0;
 }
 
 .container {

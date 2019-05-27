@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
-import { api } from '../helpers/api';
-import Todo from './todo';
+import { api } from "../helpers/api";
+import Todo from "./todo";
 
 const noop = () => {};
 
@@ -13,7 +13,7 @@ const noop = () => {};
 const propTypes = {
   filterBy: PropTypes.string,
   todos: PropTypes.arrayOf(PropTypes.object),
-  updateTodos: PropTypes.func,
+  updateTodos: PropTypes.func
 };
 
 /**
@@ -21,9 +21,9 @@ const propTypes = {
  * @private
  */
 const defaultProps = {
-  filterBy: '',
+  filterBy: "",
   todos: [],
-  updateTodos: noop,
+  updateTodos: noop
 };
 
 /**
@@ -34,44 +34,16 @@ const Todos = ({ filterBy, todos, updateTodos }) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'todos';
+  const baseCls = "todos";
 
   /**
-   * Callback function to delete todo from todos collection
+   * Callback function to handle todo updates
    *
    * @param  {object} json - Resulting JSON from fetch
    */
-  const deleteTodo = json => {
-    const index = todos.findIndex(todo => {
-      return todo.id === json.id;
-    });
-
-    updateTodos(
-      [
-        ...todos.slice(0, index),
-        ...todos.slice(index + 1),
-      ]
-    );
-  }
-
-  /**
-   * Callback function to replace todo with results of fetching the todo PUT endpoint
-   *
-   * @param  {object} json - Resulting JSON from fetch
-   */
-  const putTodo = json => {
-    const index = todos.findIndex(todo => {
-      return todo.id === json.id;
-    });
-
-    updateTodos(
-      [
-        ...todos.slice(0, index),
-        json,
-        ...todos.slice(index + 1),
-      ]
-    );
-  }
+  const handleTodoUpdates = json => {
+    updateTodos(json);
+  };
 
   /**
    * Click handler for clicking on delete button
@@ -80,7 +52,20 @@ const Todos = ({ filterBy, todos, updateTodos }) => {
    * @param {object} todo - Todo object
    */
   const onClickDelete = todo => {
-    api('DELETE', todo, deleteTodo);
+    api("DELETE", "todos", todo, handleTodoUpdates);
+  };
+
+  /**
+   * Click handler for clicking on archive button
+   * Archives todo
+   *
+   * @param {object} todo - Todo object
+   */
+  const onClickArchive = todo => {
+    const newTodo = Object.assign({}, todo);
+    newTodo.status = todo.status === "complete" ? "archived" : "complete";
+
+    api("PUT", "todos", newTodo, handleTodoUpdates);
   };
 
   /**
@@ -91,11 +76,10 @@ const Todos = ({ filterBy, todos, updateTodos }) => {
    */
   const onClickTodo = todo => {
     const newTodo = Object.assign({}, todo);
-    newTodo.status = todo.status === 'complete' ? 'active' : 'complete';
-    newTodo.archive = false;
+    newTodo.status = todo.status === "complete" ? "active" : "complete";
 
-    api('PUT', newTodo, putTodo);
-  }
+    api("PUT", "todos", newTodo, handleTodoUpdates);
+  };
 
   /**
    * Renders All Todos
@@ -106,18 +90,20 @@ const Todos = ({ filterBy, todos, updateTodos }) => {
     if (!Array.isArray(todos)) {
       return null;
     }
-
     return todos.map(todo => {
       let filtered;
       switch (filterBy) {
-        case 'active':
-          filtered = todo.status === 'complete';
+        case "active":
+          filtered = todo.status !== "active";
           break;
-        case 'completed':
-          filtered = todo.status !== 'complete';
+        case "completed":
+          filtered = todo.status !== "complete";
+          break;
+        case "archived":
+          filtered = todo.status !== "archived";
           break;
         default:
-          filtered = false;
+          filtered = todo.status === "archived" ? true : false;
       }
 
       return (
@@ -126,18 +112,15 @@ const Todos = ({ filterBy, todos, updateTodos }) => {
           filtered={filtered}
           onClickDelete={onClickDelete.bind(this, todo)}
           onClickTodo={onClickTodo.bind(this, todo)}
+          onClickArchive={onClickArchive.bind(this, todo)}
           status={todo.status}
           text={todo.text}
         />
       );
-    })
-  }
+    });
+  };
 
-  return (
-    <ul className={baseCls}>
-      {renderTodos()}
-    </ul>
-  )
+  return <ul className={baseCls}>{renderTodos()}</ul>;
 };
 
 Todos.propTypes = propTypes;

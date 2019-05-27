@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
 const noop = () => {};
 
@@ -9,7 +9,7 @@ const noop = () => {};
  */
 const propTypes = {
   onClick: PropTypes.func,
-  text: PropTypes.string,
+  text: PropTypes.string
 };
 
 /**
@@ -18,7 +18,7 @@ const propTypes = {
  */
 const defaultProps = {
   onClick: noop,
-  text: '',
+  text: ""
 };
 
 /**
@@ -29,13 +29,15 @@ const Button = ({ text, onClick }) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'button';
+  const baseCls = "button";
+  const buttonCls =
+    baseCls + (text === "Delete" ? " button--danger" : " button--success");
 
   return (
-    <button className={baseCls} onClick={onClick}>
+    <button className={buttonCls} onClick={onClick}>
       {text}
     </button>
-  )
+  );
 };
 
 Button.propTypes = propTypes;

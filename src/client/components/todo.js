@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-
-import Button from './button';
-import TodoLink from './todo-link';
+import PropTypes from "prop-types";
+import React from "react";
+import Button from "./button";
+import TodoLink from "./todo-link";
+import Checkbox from "./checkbox";
 
 const noop = () => {};
 
@@ -15,7 +15,7 @@ const propTypes = {
   onClickDelete: PropTypes.func,
   onClickTodo: PropTypes.func,
   status: PropTypes.string,
-  text: PropTypes.string,
+  text: PropTypes.string
 };
 
 /**
@@ -26,32 +26,48 @@ const defaultProps = {
   filtered: false,
   onClickDelete: noop,
   onClickTodo: noop,
-  status: '',
-  text: '',
+  status: "",
+  text: ""
 };
 
 /**
  * Todo component
  * @returns {ReactElement}
  */
-const Todo = ({ filtered, onClickDelete, onClickTodo, status, text }) => {
+const Todo = ({
+  filtered,
+  onClickDelete,
+  onClickArchive,
+  onClickTodo,
+  status,
+  text
+}) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'todo';
+  const baseCls = "todo";
+  const isComplete = status === "complete";
+  const isArchived = status === "archived";
 
-  const todoCls = baseCls
-    + (status === 'complete' ? ' todo--status-complete' : '')
-    + (filtered ? ' todo--filtered' : '');
+  const todoCls =
+    baseCls +
+    (isComplete || isArchived ? " todo--status-complete" : "") +
+    (filtered ? " todo--filtered" : "");
 
   return (
     <li className={todoCls}>
-      <TodoLink text={text} onClick={onClickTodo} />
-
+      <Checkbox status={status} onClickTodo={onClickTodo} />
+      <TodoLink status={status} text={text} onClick={onClickTodo} />
+      {(isComplete || isArchived) && (
+        <Button
+          text={isComplete ? "Archive" : "Restore"}
+          onClick={onClickArchive}
+        />
+      )}
       <Button text="Delete" onClick={onClickDelete} />
     </li>
   );
-}
+};
 
 Todo.propTypes = propTypes;
 Todo.defaultProps = defaultProps;

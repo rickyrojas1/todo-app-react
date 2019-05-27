@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
 const noop = () => {};
 
@@ -10,6 +10,7 @@ const noop = () => {};
 const propTypes = {
   onClick: PropTypes.func,
   text: PropTypes.string,
+  status: PropTypes.string
 };
 
 /**
@@ -18,21 +19,27 @@ const propTypes = {
  */
 const defaultProps = {
   onClick: noop,
-  text: '',
+  text: "",
+  status: ""
 };
 
 /**
  * Link component
  * @returns {ReactElement}
  */
-const TodoLink = ({ text, onClick }) => {
+const TodoLink = ({ status, text, onClick }) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'todo-link';
+  const baseCls = "todo-link";
+  const isComplete = status === "complete";
+  const isArchived = status === "archived";
+
+  const todoLinkCls =
+    baseCls + (isComplete || isArchived ? " todo-link--status-complete" : "");
 
   return (
-    <div className={baseCls} onClick={onClick}>
+    <div className={todoLinkCls} onClick={isArchived ? null : onClick}>
       {text}
     </div>
   );

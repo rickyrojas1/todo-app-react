@@ -1,10 +1,31 @@
 // Navbar module
 .navbar {
+
+  background-color: map-get($colors, lightgray);
+  height: 35px;
+  display: flex;
+  align-items: center;
+  padding-left: 50px;
+
   &__item {
     text-decoration: none;
+    margin-right: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
+    opacity: .4;
+
+  }
+
+  &__item:hover {
+    cursor: pointer;
   }
 
   &__item--active {
+    margin-right: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    opacity: .7;
     font-weight: 700;
   }
 }

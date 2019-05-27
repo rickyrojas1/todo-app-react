@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Header component
@@ -9,13 +9,15 @@ const Header = () => {
    * Base CSS class
    * @returns {ReactElement}
    */
-  const baseCls = 'header';
+  const baseCls = "header";
 
   return (
     <div className={baseCls}>
-      <Link to="/">MyTodos</Link>
+      <Link className={`${baseCls}__title`} to="/">
+        MyTodos
+      </Link>
     </div>
-  )
+  );
 };
 
 export default Header;

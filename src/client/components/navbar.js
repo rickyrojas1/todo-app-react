@@ -1,6 +1,6 @@
-import { NavLink } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import React from 'react';
+import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
+import React from "react";
 
 const noop = () => {};
 
@@ -10,7 +10,7 @@ const noop = () => {};
  */
 const propTypes = {
   filterBy: PropTypes.string,
-  onClickFilter: PropTypes.func,
+  onClickFilter: PropTypes.func
 };
 
 /**
@@ -18,8 +18,8 @@ const propTypes = {
  * @private
  */
 const defaultProps = {
-  filterBy: '',
-  onClickFilter: noop,
+  filterBy: "",
+  onClickFilter: noop
 };
 
 /**
@@ -30,39 +30,48 @@ const Navbar = ({ filterBy, onClickFilter }) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'navbar'
+  const baseCls = "navbar";
 
-  let activeLinkCls = `${baseCls}__item`;
-  activeLinkCls += filterBy === 'active' ? ` ${baseCls}__item--active` : '';
-
-  let completedLinkCls = `${baseCls}__item`;
-  completedLinkCls += filterBy === 'completed' ? ` ${baseCls}__item--active` : '';
+  let allLinkCls = `${baseCls}__item`;
+  allLinkCls += filterBy === "" ? ` ${baseCls}__item--active` : "";
 
   return (
     <div className={baseCls}>
       <NavLink
-        to="/"
-        activeClassName={`${baseCls}__item--active`}
-        className={`${baseCls}__item`}
-        onClick={() => onClickFilter('')}
+        to="/all"
+        className={allLinkCls}
+        activeClassName={` ${baseCls}__item--active`}
+        onClick={() => onClickFilter("all")}
       >
         All
       </NavLink>
-      <span
-        className={activeLinkCls}
-        onClick={() => onClickFilter('active')}
+      <NavLink
+        to="/active"
+        className={`${baseCls}__item`}
+        activeClassName={` ${baseCls}__item--active`}
+        onClick={() => onClickFilter("active")}
       >
         Active
-      </span>
-      <span
-        className={completedLinkCls}
-        onClick={() => onClickFilter('completed')}
+      </NavLink>
+      <NavLink
+        to="/completed"
+        className={`${baseCls}__item`}
+        activeClassName={` ${baseCls}__item--active`}
+        onClick={() => onClickFilter("completed")}
       >
         Completed
-      </span>
+      </NavLink>
+      <NavLink
+        to="/archived"
+        className={`${baseCls}__item`}
+        activeClassName={` ${baseCls}__item--active`}
+        onClick={() => onClickFilter("archived")}
+      >
+        Archived
+      </NavLink>
     </div>
   );
-}
+};
 
 Navbar.propTypes = propTypes;
 Navbar.defaultProps = defaultProps;

@@ -1,62 +1,89 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
+const uuidv4 = require("uuid/v4");
 const app = express();
 
-app.set('views', path.resolve('src', 'server', 'views'));
-app.set('view engine', 'ejs');
+app.set("views", path.resolve("src", "server", "views"));
+app.set("view engine", "ejs");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const todos = [
-  { id: 1, text: 'Hello, world!' },
-  { id: 2, text: 'Pick up groceries', status: 'complete' }
+let todos = [
+  { id: uuidv4(), text: "Hello, world!", status: "active" },
+  { id: uuidv4(), text: "Pick up groceries", status: "complete" }
 ];
 
-app.get('/', (req, res) => {
+// renders index page
+app.get("/", (req, res) => {
   const bundle = `//${req.hostname}:8080/public/bundle.js`;
-
-  res.render('index', { bundle });
+  res.render("index", { bundle });
 });
 
-app.get('/todos', (req, res) => {
-  res.json(JSON.stringify(todos));
+// returns all todos
+app.get("/todos", (req, res) => {
+  res.json(todos);
 });
 
-app.get('/todos/:id', (req, res) => {
+// returns specific todo based on id (not currently used)
+app.get("/todos/:id", (req, res) => {
   const id = req.params.id;
-  const index = todos.findIndex((todo) => {
+  const index = todos.findIndex(todo => {
     return todo.id === id;
   });
-
-  res.json(JSON.stringify(todos[index]));
+  res.json(todos[index]);
 });
 
-app.post('/todos', (req, res) => {
+// creates new Todo and adds to list of todos
+app.post("/todos", (req, res) => {
   const text = req.body.data.text;
 
   if (!text) {
-    res.status(400).json({ message: 'text is required' });
-
+    res.status(400).json({ message: "text is required" });
     return;
   }
 
-  const id = todos.length + 1;
-  const newTodo = { id, text, status: 'active' };
-
+  // uuidv4 is used for unique identifiers
+  const id = uuidv4();
+  const newTodo = { id, text, status: "active" };
   todos.push(newTodo);
-
   res.status(201).json(todos);
 });
 
-app.delete('/todos/:id', (req, res) => {
-  res.status(500).send({ message: 'not implemented' });
+// deletes an existing todo
+app.delete("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  todos = todos.filter(todo => todo.id != id);
+  res.status(200).json(todos);
 });
 
-app.put('/todos/:id', (req, res) => {
-  res.status(500).send({ message: 'not implemented' });
+// updates an existing todo
+app.put("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  const index = todos.findIndex(todo => {
+    return todo.id == id;
+  });
+  todos[index].status = req.body.data.status;
+  res.status(200).json(todos);
+});
+
+// updates multiple existing todos
+app.put("/multipleTodos/", (req, res) => {
+  let { filterRemaining, switchTo } = req.body.data;
+  todos.forEach(todo => {
+    if (todo.status === filterRemaining) {
+      todo.status = switchTo;
+    }
+  });
+  res.status(200).json(todos);
+});
+
+// catch all used to load client router on any page requests
+app.get("*", function(req, res) {
+  const bundle = `//${req.hostname}:8080/public/bundle.js`;
+
+  res.render("index", { bundle });
 });
 
 // Node server.
@@ -66,7 +93,7 @@ const server = app.listen(port, () => {
 });
 
 // Dev server.
-const devServer = require('../../tools/development-server');
+const devServer = require("../../tools/development-server");
 const devPort = 8080;
 
-devServer.listen(devPort, '0.0.0.0', () => {});
+devServer.listen(devPort, "0.0.0.0", () => {});

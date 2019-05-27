@@ -1,13 +1,10 @@
-import { Link } from 'react-router';
-import PropTypes from 'prop-types';
-import React from 'react';
-
-import { api, getApiPromise } from '../helpers/api';
-import Button from './button';
-import Navbar from './navbar';
-import TodoForm from './todo-form';
-import TodoLink from './todo-link';
-import Todos from './todos';
+import PropTypes from "prop-types";
+import React from "react";
+import { api } from "../helpers/api";
+import Navbar from "./navbar";
+import TodoForm from "./todo-form";
+import Todos from "./todos";
+import SummaryBar from "./summary-bar";
 
 /**
  * TodosPage component
@@ -16,16 +13,16 @@ import Todos from './todos';
 class TodosPage extends React.Component {
   /**
    * Base CSS class
-   * @static
+   *
    */
-  static baseCls = 'todos-page'
+  baseCls = "todos-page";
 
   /**
    * Prop types
    * @static
    */
   static propTypes = {
-    params: PropTypes.object,
+    params: PropTypes.object
   };
 
   /**
@@ -39,20 +36,21 @@ class TodosPage extends React.Component {
 
     this.state = {
       todos: [],
-      filterBy: null,
+      filterBy: "all"
     };
 
     this.addTodo = this.addTodo.bind(this);
     this.postTodo = this.postTodo.bind(this);
     this.setFilterBy = this.setFilterBy.bind(this);
     this.updateTodos = this.updateTodos.bind(this);
+    this.setRemainingTasks = this.setRemainingTasks.bind(this);
   }
 
   /**
    * Component did mount
    */
   componentDidMount() {
-    api('GET', null, this.updateTodos);
+    api("GET", "todos", null, this.updateTodos);
   }
 
   /**
@@ -65,7 +63,7 @@ class TodosPage extends React.Component {
       return;
     }
 
-    api('POST', { text }, this.postTodo);
+    api("POST", "todos", { text }, this.postTodo);
   }
 
   /**
@@ -74,9 +72,13 @@ class TodosPage extends React.Component {
    * @param  {object} json - Resulting JSON from fetch
    */
   postTodo(json) {
+    let { filterBy } = this.state;
+    filterBy = filterBy ? filterBy : "all";
     this.setState({
-      todos: [...json],
+      todos: [...json]
     });
+
+    this.setRemainingTasks(filterBy, json);
   }
 
   /**
@@ -86,6 +88,25 @@ class TodosPage extends React.Component {
    */
   setFilterBy(filterBy) {
     this.setState({ filterBy });
+    this.setRemainingTasks(filterBy, this.state.todos);
+  }
+
+  /**
+   * Set Remaining Tasks
+   *
+   * @param {string} filterBy - filterBy state
+   * @param {Array} todos - Array of todo objects
+   */
+  setRemainingTasks(filterBy, todos) {
+    let filterRemaining = filterBy === "all" ? "active" : filterBy;
+    if (filterBy === "completed") {
+      filterRemaining = "complete";
+    }
+
+    let tasksLeft = todos.filter(todo => {
+      return todo.status == filterRemaining;
+    });
+    this.setState({ filterRemaining, tasksLeft });
   }
 
   /**
@@ -94,7 +115,10 @@ class TodosPage extends React.Component {
    * @param  {Array} todos - Array of todo objects
    */
   updateTodos(todos) {
-    this.setState({ todos });
+    let { id } = this.props.match.params;
+
+    this.setRemainingTasks(id ? id : "all", todos);
+    this.setState({ todos, filterBy: id });
   }
 
   /**
@@ -102,15 +126,23 @@ class TodosPage extends React.Component {
    * @returns {ReactElement}
    */
   render() {
+    const { filterBy, todos, filterRemaining, tasksLeft } = this.state;
+
     return (
       <div className={this.baseCls}>
-        <Navbar filterBy={this.state.filterBy} onClickFilter={this.setFilterBy} />
+        <Navbar filterBy={filterBy} onClickFilter={this.setFilterBy} />
 
-        <TodoForm onSubmit={this.addTodo} />
+        <SummaryBar
+          filterRemaining={filterRemaining}
+          tasksLeft={tasksLeft}
+          updateTodos={this.updateTodos}
+        />
+
+        <TodoForm onSubmit={this.addTodo} updateTodos={this.updateTodos} />
 
         <Todos
-          filterBy={this.state.filterBy}
-          todos={this.state.todos}
+          filterBy={filterBy}
+          todos={todos}
           updateTodos={this.updateTodos}
         />
       </div>

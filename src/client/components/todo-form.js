@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
 const noop = () => {};
 
@@ -10,9 +10,9 @@ const noop = () => {};
 class TodoForm extends React.Component {
   /**
    * Base CSS class
-   * @static
+   *
    */
-  static baseCls = 'todo-form';
+  baseCls = "todo-form";
 
   /**
    * Prop Types
@@ -20,10 +20,12 @@ class TodoForm extends React.Component {
    */
   static propTypes = {
     onSubmit: PropTypes.func,
+    updateTodos: PropTypes.func
   };
 
   static defaultProps = {
     onSubmit: noop,
+    onSubmit: noop
   };
 
   /**
@@ -33,7 +35,7 @@ class TodoForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { input: '' };
+    this.state = { input: "" };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -45,7 +47,7 @@ class TodoForm extends React.Component {
    */
   onChange(e) {
     this.setState({
-      input: e.target.value,
+      input: e.target.value
     });
   }
 
@@ -58,7 +60,7 @@ class TodoForm extends React.Component {
 
     this.props.onSubmit(this.state.input);
 
-    this.setState({ input: '' });
+    this.setState({ input: "" });
   }
 
   /**
@@ -67,8 +69,9 @@ class TodoForm extends React.Component {
    */
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
+      <form className={this.baseCls} onSubmit={this.onSubmit}>
         <input
+          className={`${this.baseCls}__input`}
           onChange={this.onChange}
           placeholder="Add new todo..."
           value={this.state.input}

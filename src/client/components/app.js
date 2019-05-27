@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { BrowserRouter, Route } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { BrowserRouter, HashRouter, Route } from "react-router-dom";
 
-import TodosPage from './todos-page';
-import Header from './header';
+import TodosPage from "./todos-page";
+import Header from "./header";
 
 /**
  * Prop Types
@@ -13,7 +13,7 @@ const propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
-  ]),
+  ])
 };
 
 /**
@@ -24,16 +24,14 @@ const App = ({ children }) => {
   /**
    * Base CSS class
    */
-  const baseCls = 'app';
-
+  const baseCls = "app";
   return (
     <BrowserRouter>
       <div className={baseCls}>
         <Header />
 
-        <Route path="/">
-          <TodosPage />
-        </Route>
+        <Route exact path="/" component={TodosPage} />
+        <Route path="/:id" component={TodosPage} />
       </div>
     </BrowserRouter>
   );
